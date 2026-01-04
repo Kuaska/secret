@@ -22,7 +22,6 @@
             overflow-x: hidden;
         }
 
-        /* 💖 Падающие сердечки */
         .heart {
             position: fixed;
             top: -20px;
@@ -41,7 +40,6 @@
             }
         }
 
-        /* Вопрос */
         #content {
             position: relative;
             z-index: 10;
@@ -94,7 +92,6 @@
             transform: scale(1.03);
         }
 
-        /* Признание */
         #confession {
             position: fixed;
             top: 0;
@@ -110,7 +107,6 @@
             font-size: 1.25em;
             line-height: 1.6;
             font-family: 'Georgia', 'Times New Roman', serif;
-            color: #a00040; /* чуть темнее для лучшей читаемости */
         }
 
         #confession.active {
@@ -139,9 +135,9 @@
             font-size: 2.2em;
             color: #e6005c;
             text-shadow: 0 0 6px rgba(230, 0, 92, 0.4);
+            font-weight: bold;
         }
 
-        /* Скроллбар */
         #confession::-webkit-scrollbar {
             width: 6px;
         }
@@ -167,7 +163,6 @@
 <div id="confession"></div>
 
 <script>
-    // 🌸 Падающие сердечки
     function createHeart() {
         if (document.hidden) return;
         const heart = document.createElement('div');
@@ -187,7 +182,6 @@
     setInterval(createHeart, 150);
     for (let i = 0; i < 30; i++) setTimeout(createHeart, i * 60);
 
-    // === Логика кнопок ===
     const yesBtn = document.getElementById('yes');
     const noBtn = document.getElementById('no');
     const questionBlock = document.getElementById('question-block');
@@ -230,7 +224,6 @@
 
         confessionBlock.classList.add('active');
 
-        // 💬 Печатаем 250 строк (вместо 1000+)
         const total = 250;
         let current = 1;
         const batchSize = 10;
@@ -239,10 +232,9 @@
 
         function addBatch() {
             if (current > total) {
-                // Финальное сообщение
                 const finale = document.createElement('div');
                 finale.className = 'finale';
-                finale.innerHTML = 'Да не ххолодно мне)';
+                finale.textContent = 'Да не ххолодно мне)';
                 confessionBlock.appendChild(finale);
                 finale.scrollIntoView({ behavior: 'smooth', block: 'end' });
                 return;
@@ -252,14 +244,23 @@
             for (let i = 0; i < batchSize && current <= total; i++, current++) {
                 const div = document.createElement('div');
                 div.className = 'line';
+                const angle = 90 + (current * 1.7) % 360;
+                const baseHue = 335;
+                const hue1 = (baseHue + Math.sin(current * 0.15) * 12 + 360) % 360;
+                const hue2 = (baseHue + 20 + Math.cos(current * 0.1) * 15 + 360) % 360;
+                const gradient = `linear-gradient(${angle}deg, hsl(${hue1}, 85%, 62%), hsl(${hue2}, 75%, 58%))`;
                 div.textContent = `${current} — люблю тебя❤`;
+                div.style.background = gradient;
+                div.style.webkitBackgroundClip = 'text';
+                div.style.backgroundClip = 'text';
+                div.style.color = 'transparent';
+                div.style.fontWeight = '600';
                 frag.appendChild(div);
                 lastLine = div;
             }
 
             confessionBlock.appendChild(frag);
 
-            // Прокрутка — только раз в 20 строк, чтобы не тормозить
             if (current % 20 === 0 && lastLine) {
                 requestAnimationFrame(() => {
                     lastLine.scrollIntoView({ behavior: 'smooth', block: 'end' });
